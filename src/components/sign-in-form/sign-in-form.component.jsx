@@ -23,16 +23,15 @@ const SignInForm = () => {
   };
 
   const signInWitGoogle = async () => {
-    const { user } = await signInWithGooglePopup();
-    const userDocRef = await createUserDocumentFromAuth(user);
+    await signInWithGooglePopup();
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await signInUserWithEmailAndPassword(email, password);
-      console.log(response);
+      const { user } = await signInUserWithEmailAndPassword(email, password);
+      resetFormField();
     } catch (error) {
       switch (error.code) {
         case "auth/invalid-email":
