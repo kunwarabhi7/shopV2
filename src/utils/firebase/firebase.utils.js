@@ -4,17 +4,17 @@ import {
     createUserWithEmailAndPassword, signInWithEmailAndPassword
     , signOut, onAuthStateChanged
 } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc ,collection ,writeBatch } from 'firebase/firestore'
+import { getFirestore, doc, getDoc, setDoc ,collection ,writeBatch ,query ,getDocs } from 'firebase/firestore'
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCMD9JII9qE0HyNmNtFj9xK9tajP1C2j_8",
-    authDomain: "tut03-75b00.firebaseapp.com",
-    projectId: "tut03-75b00",
-    storageBucket: "tut03-75b00.appspot.com",
-    messagingSenderId: "720960996396",
-    appId: "1:720960996396:web:6df71324c70726b5c5bd89"
-};
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP_APP_ID ,
+  };
 const app = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({
@@ -37,6 +37,20 @@ await batch.commit()
 console.log('done')
 }
 
+export const getCategoriesAndDocuments = async () => {
+    const collectionRef = collection(db, 'categories');
+    const q = query(collectionRef);
+  
+    const querySnapshot = await getDocs(q);
+    const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+      const { title, items } = docSnapshot.data();
+      acc[title.toLowerCase()] = items;
+      return acc;
+    }, {});
+  
+    return categoryMap;
+  };
+  
 export const createUserDocumentFromAuth = async (userAuth, aditionalInformation) => {
     if (!userAuth) return;
     const userDocRef = doc(db, 'users', userAuth.uid)
